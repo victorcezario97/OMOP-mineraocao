@@ -1,0 +1,18 @@
+
+//Tempo médio de duração de uma internação por idade
+SELECT Floor((date_part('year', CURRENT_DATE) - P.year_of_birth)/5.00)*5 AS AGE,
+	AVG(CASE WHEN (V.visit_end_date - V.visit_start_date) > 1 THEN (V.visit_end_date - V.visit_start_date) END) AS AVG_VISIT_LENGTH
+FROM public.visit_occurrence V
+	INNER JOIN public.person P ON V.person_id = P.person_id
+GROUP BY AGE
+ORDER BY AGE;
+
+//Exame mais comum realizado em cada care_site
+SELECT V.care_site_id AS CARE_SITE, mode()
+	WITHIN GROUP (ORDER BY C.concept_name) AS MOST_COMMON_EXAM
+	FROM public.measurement M 
+	INNER JOIN public.visit_occurrence V ON M.visit_occurrence_id = V.visit_occurrence_id
+	INNER JOIN public.concept C ON M.measurement_concept_id = C.concept_id
+	GROUP BY V.care_site_id;
+
+
