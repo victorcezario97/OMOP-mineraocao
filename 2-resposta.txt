@@ -1,0 +1,51 @@
+2
+Realiza-se um join da tabela MEASUREMENT com a tabela CONCEPT para que possamos selecionar tanto a data, quanto
+o nome do exame em suas respectivas tabelas. O join é feito com base no measurement_concept_id da tabela MEASUREMENT
+e o concept_id da tabela CONCEPT. Também restringe-se as datas com o uso do comando WHERE e BETWEEN,
+fazendo com que as datas retornadas estejam dentro do intervalo necessário. Por fim, ordena-se a tabela final 
+pela data do exame, por conveniência.
+
+SELECT C.concept_name as NOME, M.measurement_date as DATA_REALIZADA
+FROM 
+  public.measurement M
+  INNER JOIN public.concept C on M.measurement_concept_id = C.concept_id
+  WHERE M.measurement_date BETWEEN '2008-01-01' AND '2011-12-31'
+  ORDER BY M.measurement_date;
+
+2.1
+Realiza-se um JOIN da tabela MEASUREMENT com a PERSON para que sejam selecionados o gênero,
+e a porcentagem dos exames realizados por ele. A porcentagem é obtida através da divisão de um COUNT(*), que 
+retorna a quantidade de registros do gênero sendo tratado, por um SELECT de outro COUNT(*), porém este retornando
+a quantidade total de registros de exames. As datas continuam sendo filtradas no mesmo intervalo do último
+exercício através dos comandos WHERE e BETWEEN, e o resultado é agrupado por gênero.
+
+SELECT P.gender_concept_id AS GENERO,
+	( COUNT(*)*100.0 /
+		(SELECT COUNT(*) from public.measurement M2)
+	) AS PORCENTAGEM
+	FROM public.measurement M
+	INNER JOIN public.person P ON M.person_id = P.person_id
+	WHERE M.measurement_date BETWEEN '2008-01-01' AND '2011-12-31'
+	GROUP BY P.gender_concept_id;
+
+
+
+2.2
+Seguindo os mesmos passos do execício 2.1, são selecionados os diferentes gêneros presentes na tabela PERSON
+e a porcentagem dos exercícios realizados por cada um, mas além disso, seleciona-se também o ano em que o exame foi realizado
+utilizando-se o comando EXTRACT, que extrai o ano da data contida na tabela MEASUREMENT. Os resultados são
+também agrupados pelo ano em que foram realizados, além do gênero, e ordenados por ambos também.
+
+SELECT P.gender_concept_id AS GENERO,
+	( COUNT(*)*100.0 /
+		(SELECT COUNT(*) from public.measurement)
+	) AS PORCENTAGEM,
+	EXTRACT(YEAR FROM M.measurement_date)
+	FROM public.measurement M
+	INNER JOIN public.person P ON M.person_id = P.person_id
+	WHERE M.measurement_date BETWEEN '2008-01-01' AND '2011-12-31'
+	GROUP BY P.gender_concept_id, EXTRACT(YEAR FROM M.measurement_date)
+	ORDER BY EXTRACT(YEAR FROM M.measurement_date), P.gender_concept_id;
+
+
+
