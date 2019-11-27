@@ -32,11 +32,3 @@ SELECT Bin, Min(measurement_concept_id), Max(measurement_concept_id), Count(*)
 	FROM (SELECT * FROM measurement TABLESAMPLE BERNOULLI (.15) ) AS Sample) AS Partes 
 	GROUP BY Bin
 	ORDER BY Bin;
-
-
--- 1.1
-SELECT M.measurement_concept_id, C.concept_name, Count(*) as Quantidade
-	FROM public.measurement M
-	TABLESAMPLE BERNOULLI (.15)
-	INNER JOIN public.concept C on M.measurement_concept_id = C.concept_id
-	GROUP BY M.measurement_concept_id, C.concept_name;
