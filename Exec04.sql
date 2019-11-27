@@ -1,14 +1,7 @@
 -- 4)
 
-CREATE OR REPLACE FUNCTION procedures_by_delimiter_id(delimiter integer) 
-RETURNS SETOF public.procedure_occurrence 
-AS $fun$
-	BEGIN
-	RETURN QUERY 
-		SELECT * FROM public.procedure_occurrence P
-			WHERE P.person_id <= delimiter
-			ORDER BY P.person_id;
-	END;
-$fun$ LANGUAGE plpgsql;
-
-SELECT * FROM procedures_by_delimiter_id(100);
+SELECT * FROM public.person PE
+	INNER JOIN public.procedure_occurrence PR ON PR.person_id = PE.person_id
+	INNER JOIN public.visit_occurrence V ON PR.visit_occurrence_id = V.visit_occurrence_ID
+	WHERE PE.person_id <= 100
+	ORDER BY PE.person_id;
